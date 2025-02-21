@@ -13,13 +13,6 @@
       "32": "icon-32.png"
     }
   },
-  "content_scripts": [
-    {
-      "matches": ["http://*/*", "https://*/*", "<all_urls>"],
-      "js": ["src/pages/content/index.tsx"],
-      "css": ["contentStyle.css"]
-    }
-  ],
   "background": {
     "service_worker": "src/pages/background/index.ts"
   },

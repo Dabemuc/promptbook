@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
-import { isPrompt, Prompt } from "@src/types";
+import { ChatApp, isPrompt, Prompt, Settings } from "@src/types";
+import { chatAppList } from "@src/chatApps";
 
 export default function Popup() {
   const [savedPrompts, setSavedPrompts] = useState<Prompt[]>([]);
+  const [chatApp, setChatApp] = useState<ChatApp | null>(null);
+  const [settings, setSettings] = useState<Settings | null>(null);
 
   useEffect(() => {
     loadSavedPrompts();
+    identifyChatApp();
+    loadSettings();
   }, []);
 
   const loadSavedPrompts = () => {
@@ -28,28 +33,37 @@ export default function Popup() {
     });
   };
 
-  const pastePrompt = (text: string) => {
+  const identifyChatApp = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs[0]?.id) {
-        chrome.scripting.executeScript({
-          target: { tabId: tabs[0].id },
-          func: (pastedText) => {
-            const activeElement = document.activeElement as
-              | HTMLInputElement
-              | HTMLTextAreaElement
-              | null;
-            if (
-              activeElement &&
-              (activeElement.tagName === "INPUT" ||
-                activeElement.tagName === "TEXTAREA")
-            ) {
-              activeElement.value += pastedText;
-            }
-          },
-          args: [text],
+        chatAppList.forEach((cA) => {
+          if (tabs[0].url?.includes(cA.url)) {
+            setChatApp(cA);
+            return;
+          }
         });
       }
     });
+  };
+
+  const loadSettings = () => {
+    // TOOD: Really load settings
+    // Create object here for now
+    const settings: Settings = {
+      send_instantly: {
+        label: "Instantly send prompts",
+        value: false,
+      },
+    };
+    setSettings(settings);
+  };
+
+  const pastePrompt = (text: string) => {
+    if (!chatApp) {
+      console.error("Failed to paste prompt. No chat app detected");
+      return;
+    }
+    chatApp.paste_function(text, settings?.send_instantly.value ?? false);
   };
 
   const deletePrompt = (id: string) => {
@@ -77,8 +91,15 @@ export default function Popup() {
         className="flex justify-evenly"
         onClick={() => pastePrompt(prompt.text)}
       >
-        <div>{prompt.text}</div>
-        <button onClick={() => deletePrompt(prompt.id)}>X</button>
+        <div className="w-full">
+          {prompt.title ??
+            (prompt.text.length <= 35
+              ? prompt.text
+              : prompt.text.substring(0, 31) + " ...")}
+        </div>
+        <button className="w-2 px-4" onClick={() => deletePrompt(prompt.id)}>
+          X
+        </button>
       </li>
     );
   };
@@ -86,7 +107,17 @@ export default function Popup() {
   const Header = () => {
     return (
       <div className="relative flex items-center w-full">
-        <div className="p-2">ChatLogo</div>
+        <div className="p-2">
+          {chatApp ? (
+            <img
+              className="h-5 w-5"
+              src={chatApp.icon_svg_data_uri}
+              title={chatApp.name + " identified"}
+            />
+          ) : (
+            "N/A"
+          )}
+        </div>
         <span className="absolute left-1/2 transform -translate-x-1/2 font-bold p-2">
           PromptBook
         </span>
@@ -97,7 +128,7 @@ export default function Popup() {
 
   const Body = () => {
     return (
-      <div className="h-full p-2 overflow-x-hidden overflow-y-auto">
+      <div className="h-full p-2 px-4 overflow-x-hidden overflow-y-auto">
         <ul>
           {savedPrompts.length > 0 ? (
             savedPrompts.map((prompt) => promptWrapper(prompt))
@@ -112,10 +143,29 @@ export default function Popup() {
   const Footer = () => {
     return (
       <div className="relative flex items-center w-full">
-        <div className="p-2"></div>
-        <span className="absolute left-1/2 transform -translate-x-1/2 p-2">
-          Footer
-        </span>
+        <div className="p-2">
+          <input
+            type="checkbox"
+            title="Instantly send prompts"
+            checked={settings?.send_instantly.value}
+            onChange={() =>
+              setSettings((prevSettings) => {
+                if (prevSettings) {
+                  return {
+                    ...prevSettings,
+                    send_instantly: {
+                      ...prevSettings.send_instantly,
+                      value: !prevSettings.send_instantly.value,
+                      label: prevSettings.send_instantly.label,
+                    },
+                  };
+                }
+                return prevSettings;
+              })
+            }
+          />
+        </div>
+        <span className="absolute left-1/2 transform -translate-x-1/2 p-2"></span>
         <div className="p-2 ml-auto"></div>
       </div>
     );

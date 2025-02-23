@@ -1,12 +1,18 @@
 export type Prompt = {
+  type: "prompt";
   text: string;
   id: string;
   public_id?: string;
   title?: string;
 };
 
-export const isPrompt = (x: Prompt) => {
-  return x.text && x.id;
+export type Folder = {
+  type: "folder";
+  id: string;
+  name: string;
+  is_open: boolean;
+  color: string;
+  content: Folder | Prompt | null;
 };
 
 export type ChatApp = {

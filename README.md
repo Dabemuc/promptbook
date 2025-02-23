@@ -28,6 +28,31 @@
 - Public website to search/discover prompts
 - Prompt rating system
 
+### MVP Features (No Backend Required)
+
+| Feature                                   | Status  |
+| ----------------------------------------- | ------- |
+| Saving via contextmenu + removing prompts | Done    |
+| Pasting prompts                           | Done    |
+| Autosend on paste                         | Done    |
+| Support more Chat Apps                    | Planned |
+| Folders + Moving Prompts                  | WIP     |
+| Tags                                      | Planned |
+| Search                                    | Planned |
+| Custom Chat App adding                    | Planned |
+| Variables                                 | Planned |
+| Beautiful UI                              | Planned |
+
+### Premium Features (Backend Required)
+
+| Feature                                 | Status  |
+| --------------------------------------- | ------- |
+| User Authentication                     | Planned |
+| Share prompt to public library          | Planned |
+| Public website to browse/search prompts | Planned |
+| Share prompt via private url            | Planned |
+| Rating prompts                          | Planned |
+
 ## Usage <a name="usage"></a>
 
 TODO

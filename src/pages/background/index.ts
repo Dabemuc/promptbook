@@ -13,6 +13,7 @@ chrome.contextMenus.onClicked.addListener((info) => {
   if (info.menuItemId === "savePromptToPromptbook") {
     chrome.storage.local.get({ savedPrompts: [] }, (data) => {
       const newPrompt: Prompt = {
+        type: "prompt",
         id: uuidv4(),
         text: info.selectionText!,
       };

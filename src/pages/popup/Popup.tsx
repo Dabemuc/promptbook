@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { ChatApp, isPrompt, Prompt, Settings } from "@src/types";
+import { ChatApp, Folder, Prompt, Settings } from "@src/types";
 import { chatAppList } from "@src/chatApps";
+import PromptManager from "./PromptManager";
 
 export default function Popup() {
-  const [savedPrompts, setSavedPrompts] = useState<Prompt[]>([]);
+  const [savedPrompts, setSavedPrompts] = useState<(Prompt | Folder)[]>([]);
   const [chatApp, setChatApp] = useState<ChatApp | null>(null);
   const [settings, setSettings] = useState<Settings | null>(null);
 
@@ -16,11 +17,12 @@ export default function Popup() {
   const loadSavedPrompts = () => {
     chrome.storage.local.get({ savedPrompts: [] }, (data) => {
       // Parse and verify data
+      console.log(data);
       const parsedData: Prompt[] = data.savedPrompts
         .map((elem: string) => {
           try {
-            const parsedElem = JSON.parse(elem);
-            if (isPrompt(parsedElem)) return parsedElem;
+            const parsedElem: Prompt = JSON.parse(elem);
+            if (parsedElem.type === "prompt") return parsedElem;
           } catch (error) {
             console.error("Error loading prompt:", elem, error);
           }
@@ -58,52 +60,6 @@ export default function Popup() {
     setSettings(settings);
   };
 
-  const pastePrompt = (text: string) => {
-    if (!chatApp) {
-      console.error("Failed to paste prompt. No chat app detected");
-      return;
-    }
-    chatApp.paste_function(text, settings?.send_instantly.value ?? false);
-  };
-
-  const deletePrompt = (id: string) => {
-    chrome.storage.local.get({ savedPrompts: [] }, (data) => {
-      const indexToRemove = data.savedPrompts.findIndex((s: string) => {
-        return JSON.parse(s).id === id;
-      });
-      if (indexToRemove === -1) {
-        console.error(
-          "Failed to delete prompt. Prompt with id " + id + " not found",
-        );
-        return;
-      }
-      data.savedPrompts.splice(indexToRemove, 1);
-      chrome.storage.local.set({ savedPrompts: data.savedPrompts });
-      console.log("Successfully deleted prompt with id " + id);
-      loadSavedPrompts();
-    });
-  };
-
-  const promptWrapper = (prompt: Prompt) => {
-    return (
-      <li
-        key={prompt.id}
-        className="flex justify-evenly"
-        onClick={() => pastePrompt(prompt.text)}
-      >
-        <div className="w-full">
-          {prompt.title ??
-            (prompt.text.length <= 35
-              ? prompt.text
-              : prompt.text.substring(0, 31) + " ...")}
-        </div>
-        <button className="w-2 px-4" onClick={() => deletePrompt(prompt.id)}>
-          X
-        </button>
-      </li>
-    );
-  };
-
   const Header = () => {
     return (
       <div className="relative flex items-center w-full">
@@ -129,13 +85,13 @@ export default function Popup() {
   const Body = () => {
     return (
       <div className="h-full p-2 px-4 overflow-x-hidden overflow-y-auto">
-        <ul>
-          {savedPrompts.length > 0 ? (
-            savedPrompts.map((prompt) => promptWrapper(prompt))
-          ) : (
-            <p>No saved texts</p>
-          )}
-        </ul>
+        <PromptManager
+          items={savedPrompts}
+          setItems={setSavedPrompts}
+          chatApp={chatApp}
+          loadSavedPrompts={loadSavedPrompts}
+          settings={settings}
+        />
       </div>
     );
   };

@@ -1,19 +1,24 @@
+import { TreeItem, TreeItems } from "dnd-kit-sortable-tree";
+
 export type Prompt = {
   type: "prompt";
   text: string;
-  id: string;
   public_id?: string;
   title?: string;
+  canHaveChildren: false;
 };
 
 export type Folder = {
   type: "folder";
-  id: string;
   name: string;
-  is_open: boolean;
   color: string;
-  content: Folder | Prompt | null;
+  collapsed: true;
+  canHaveChildren: true;
+
+  children: TreeItem<Folder | Prompt>[];
 };
+
+export type Tree = TreeItems<Folder | Prompt>;
 
 export type ChatApp = {
   name: "chatgpt";

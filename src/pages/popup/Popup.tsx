@@ -1,37 +1,60 @@
 import { useEffect, useState } from "react";
-import { ChatApp, Folder, Prompt, Settings } from "@src/types";
+import { ChatApp, Settings, Tree } from "@src/types";
 import { chatAppList } from "@src/chatApps";
 import PromptManager from "./PromptManager";
 
 export default function Popup() {
-  const [savedPrompts, setSavedPrompts] = useState<(Prompt | Folder)[]>([]);
+  const [savedData, setSavedData] = useState<Tree>([]);
   const [chatApp, setChatApp] = useState<ChatApp | null>(null);
   const [settings, setSettings] = useState<Settings | null>(null);
 
   useEffect(() => {
-    loadSavedPrompts();
+    loadSavedData();
     identifyChatApp();
     loadSettings();
   }, []);
 
-  const loadSavedPrompts = () => {
-    chrome.storage.local.get({ savedPrompts: [] }, (data) => {
+  const loadSavedData = () => {
+    chrome.storage.local.get({ savedPromptData: [] }, (data) => {
       // Parse and verify data
       console.log(data);
-      const parsedData: Prompt[] = data.savedPrompts
-        .map((elem: string) => {
-          try {
-            const parsedElem: Prompt = JSON.parse(elem);
-            if (parsedElem.type === "prompt") return parsedElem;
-          } catch (error) {
-            console.error("Error loading prompt:", elem, error);
-          }
-          return null;
-        })
-        .filter((elem: Prompt): elem is Prompt => elem !== null); // filter non-valid entries
-      // Set valid prompts
-      setSavedPrompts(parsedData);
-      console.log("Read prompts from localStore:", parsedData);
+      const parsedData: Tree = data.savedPromptData;
+      if (parsedData.length == 0) {
+        setSavedData([
+          {
+            type: "prompt",
+            id: "1111",
+            text: "This is a test prompt 123",
+            canHaveChildren: false,
+          },
+          {
+            type: "folder",
+            id: "2222",
+            color: "#123456",
+            name: "TestFolder1",
+            collapsed: true,
+            canHaveChildren: true,
+            children: [
+              {
+                type: "prompt",
+                id: "3333",
+                text: "This is second test prompt 456",
+                canHaveChildren: false,
+              },
+              {
+                type: "prompt",
+                id: "4444",
+                text: "And third test prompt 789",
+                canHaveChildren: false,
+              },
+            ],
+          },
+        ]);
+        console.log("LocalStore empty. Using test data");
+      } else {
+        setSavedData(parsedData);
+        console.log("Read data from localStore:", parsedData);
+      }
     });
   };
 
@@ -86,10 +109,9 @@ export default function Popup() {
     return (
       <div className="h-full p-2 px-4 overflow-x-hidden overflow-y-auto">
         <PromptManager
-          items={savedPrompts}
-          setItems={setSavedPrompts}
+          tree={savedData}
+          setTree={setSavedData}
           chatApp={chatApp}
-          loadSavedPrompts={loadSavedPrompts}
           settings={settings}
         />
       </div>

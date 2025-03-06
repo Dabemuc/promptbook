@@ -30,18 +30,22 @@
 
 ### MVP Features (No Backend Required)
 
-| Feature                                   | Status  |
-| ----------------------------------------- | ------- |
-| Saving via contextmenu + removing prompts | Done    |
-| Pasting prompts                           | Done    |
-| Autosend on paste                         | Done    |
-| Support more Chat Apps                    | Planned |
-| Folders + Moving Prompts                  | WIP     |
-| Tags                                      | Planned |
-| Search                                    | Planned |
-| Custom Chat App adding                    | Planned |
-| Variables                                 | Planned |
-| Beautiful UI                              | Planned |
+| Feature                                   | Status   |
+| ----------------------------------------- | -------- |
+| Saving via contextmenu + removing prompts | Done     |
+| Pasting prompts                           | Done     |
+| Autosend on paste                         | Done     |
+| Folders + Moving Prompts                  | Done     |
+| Per-item context menu to delete/edit      | Done     |
+| Edit item modal                           | Done     |
+| Delete item confirmation modal            | Planned  |
+| Search                                    | Planned  |
+| Variables                                 | Planned  |
+| Export/Import                             | Planned  |
+| Support more Chat Apps                    | Planned  |
+| Beautiful UI                              | Planned  |
+| Custom Chat App adding                    | Planned  |
+| Tags                                      | Scrapped |
 
 ### Premium Features (Backend Required)
 

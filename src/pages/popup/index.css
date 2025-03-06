@@ -13,6 +13,12 @@ body {
 
 .dnd-sortable-tree_simple_tree-item {
   margin: 2px !important;
-  padding: 8px !important;
+  padding: 0px !important;
+  padding-left: 10px !important;
   border-radius: 8px !important;
+  overflow: hidden;
+}
+
+.dnd-sortable-tree_simple_tree-item:hover {
+  border-color: var(--color-gray-600);
 }

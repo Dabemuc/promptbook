@@ -1,6 +1,6 @@
 import { Folder, Prompt, Tree } from "@src/types";
 import { TreeItem } from "dnd-kit-sortable-tree";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 export const EditModal = ({
   item,
@@ -19,6 +19,17 @@ export const EditModal = ({
   const PromptTitleRef = useRef<HTMLTextAreaElement | null>(null);
   const FolderNameRef = useRef<HTMLTextAreaElement | null>(null);
   const FolderColorRef = useRef<HTMLInputElement | null>(null);
+
+  // Set cursor to last char in PromptTextRef
+  useEffect(() => {
+    if (PromptTextRef.current) {
+      PromptTextRef.current.focus();
+      PromptTextRef.current.setSelectionRange(
+        PromptTextRef.current.value.length,
+        PromptTextRef.current.value.length,
+      );
+    }
+  }, [PromptTextRef]);
 
   const handleSavePrompt = () => {
     console.log("Saving", item.type, item.id);
@@ -143,8 +154,16 @@ export const EditModal = ({
             ref={FolderNameRef}
             className="p-1 mb-1 w-full border-gray-600 border-[1px] rounded-md resize-none"
           />
-          <input type="color" defaultValue={item.color} ref={FolderColorRef} />
-          <div className="pt-1 px-1 w-full flex justify-between">
+          <label className="flex items-center mt-2">
+            {"Color: "}
+            <input
+              type="color"
+              defaultValue={item.color}
+              ref={FolderColorRef}
+              className="ml-3"
+            />
+          </label>
+          <div className="pt-1 px-1 mt-auto w-full flex justify-between">
             <button
               className="px-2 py-1 bg-green-100 rounded-md cursor-pointer"
               onClick={handleSaveFolder}

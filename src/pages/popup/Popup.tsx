@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ChatApp, Settings, Tree } from "@src/types";
 import { chatAppList } from "@src/chatApps";
-import PromptManager from "./PromptManager";
+import PromptManager from "./components/PromptManager";
 
 export default function Popup() {
   const [savedData, setSavedData] = useState<Tree>([]);

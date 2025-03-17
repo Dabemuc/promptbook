@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import { ContextMenu } from "radix-ui";
 import { TrashIcon, Pencil1Icon } from "@radix-ui/react-icons";
 import { EditModal } from "./EditModal";
+import { useDeleteModal } from "./DeleteModal";
 
 export default function PromptManager({
   tree,
@@ -24,6 +25,7 @@ export default function PromptManager({
   const [editing, setEditing] = useState<TreeItem<Prompt | Folder> | undefined>(
     undefined,
   );
+  const { DeleteModalComponent, openModal } = useDeleteModal();
 
   const storeTree = (treeToStore: Tree) => {
     console.log("Persisting Tree", tree);
@@ -42,13 +44,17 @@ export default function PromptManager({
       chatApp.paste_function(text, settings?.send_instantly.value ?? false);
     };
 
-    const deletePrompt = (item: TreeItem<Prompt | Folder>) => {
+    const deletePrompt = async (item: TreeItem<Prompt | Folder>) => {
       console.log("Deleting", item.id);
-      //TODO: Add confirmation modal
-      const newTree = [...tree];
-      removeFromTree(item, newTree);
-      storeTree(newTree);
-      setTree(newTree);
+      const confirm: boolean = await openModal();
+      if (confirm) {
+        const newTree = [...tree];
+        removeFromTree(item, newTree);
+        storeTree(newTree);
+        setTree(newTree);
+      } else {
+        console.log("Deletion canceled");
+      }
     };
 
     const editPrompt = (item: TreeItem<Prompt | Folder>) => {
@@ -125,6 +131,7 @@ export default function PromptManager({
 
   return (
     <>
+      {DeleteModalComponent}
       {editing ? (
         <EditModal
           item={editing!}

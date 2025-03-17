@@ -38,7 +38,7 @@
 | Folders + Moving Prompts                  | Done     |
 | Per-item context menu to delete/edit      | Done     |
 | Edit item modal                           | Done     |
-| Delete item confirmation modal            | WIP      |
+| Delete item confirmation modal            | Done     |
 | Search                                    | Planned  |
 | Variables                                 | Planned  |
 | Export/Import                             | Planned  |

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { ChatApp, Settings, Tree } from "@src/types";
 import { chatAppList } from "@src/chatApps";
-import PromptManager from "./components/PromptManager";
+import { Header } from "./components/Header";
+import { Body } from "./components/Body";
+import { Footer } from "./components/Footer";
 
 export default function Popup() {
   const [savedData, setSavedData] = useState<Tree>([]);
@@ -83,81 +85,16 @@ export default function Popup() {
     setSettings(settings);
   };
 
-  const Header = () => {
-    return (
-      <div className="relative flex items-center w-full">
-        <div className="p-2">
-          {chatApp ? (
-            <img
-              className="h-5 w-5"
-              src={chatApp.icon_svg_data_uri}
-              title={chatApp.name + " identified"}
-            />
-          ) : (
-            "N/A"
-          )}
-        </div>
-        <span className="absolute left-1/2 transform -translate-x-1/2 font-bold p-2">
-          PromptBook
-        </span>
-        <div className="p-2 ml-auto">Login</div>
-      </div>
-    );
-  };
-
-  const Body = () => {
-    return (
-      <div className="h-full p-2 px-4 overflow-x-hidden overflow-y-auto">
-        <PromptManager
-          tree={savedData}
-          setTree={setSavedData}
-          chatApp={chatApp}
-          settings={settings}
-        />
-      </div>
-    );
-  };
-
-  const Footer = () => {
-    return (
-      <div className="relative flex items-center w-full">
-        <div className="p-2">
-          <label className="flex items-center">
-            <input
-              className="mx-2"
-              type="checkbox"
-              title="Instantly send prompts"
-              checked={settings?.send_instantly.value}
-              onChange={() =>
-                setSettings((prevSettings) => {
-                  if (prevSettings) {
-                    return {
-                      ...prevSettings,
-                      send_instantly: {
-                        ...prevSettings.send_instantly,
-                        value: !prevSettings.send_instantly.value,
-                        label: prevSettings.send_instantly.label,
-                      },
-                    };
-                  }
-                  return prevSettings;
-                })
-              }
-            />
-            {"Send prompts on click"}
-          </label>
-        </div>
-        <span className="absolute left-1/2 transform -translate-x-1/2 p-2"></span>
-        <div className="p-2 ml-auto"></div>
-      </div>
-    );
-  };
-
   return (
     <div className="h-full">
-      <Header />
-      <Body />
-      <Footer />
+      <Header chatApp={chatApp} />
+      <Body
+        tree={savedData}
+        setTree={setSavedData}
+        settings={settings}
+        chatApp={chatApp}
+      />
+      <Footer settings={settings} setSettings={setSettings} />
     </div>
   );
 }

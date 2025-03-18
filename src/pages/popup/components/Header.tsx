@@ -1,11 +1,9 @@
-import { ChatApp } from "@src/types";
 import { SearchBar } from "./SearchBar";
+import { usePopupContext } from "../contexts/PopupContext";
 
-type HeaderProps = {
-  chatApp: ChatApp | null;
-};
+export const Header = () => {
+  const { chatApp } = usePopupContext();
 
-export const Header = ({ chatApp }: HeaderProps) => {
   return (
     <div className="relative flex items-center w-full">
       <div className="p-2">

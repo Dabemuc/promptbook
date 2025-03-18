@@ -1,20 +1,19 @@
 import { Folder, Prompt, Tree } from "@src/types";
 import { TreeItem } from "dnd-kit-sortable-tree";
 import { useEffect, useRef } from "react";
+import { usePopupContext } from "../contexts/PopupContext";
 
 export const EditModal = ({
   item,
-  tree,
-  setTree,
   storeTree,
   setEditing,
 }: {
   item: TreeItem<Folder | Prompt>;
-  tree: Tree;
-  setTree: (newTree: Tree) => void;
   storeTree: (treeToStore: Tree) => void;
   setEditing: (itemToEdit: TreeItem<Prompt | Folder> | undefined) => void;
 }) => {
+  const { savedData, setSavedData } = usePopupContext();
+
   const PromptTextRef = useRef<HTMLTextAreaElement | null>(null);
   const PromptTitleRef = useRef<HTMLTextAreaElement | null>(null);
   const FolderNameRef = useRef<HTMLTextAreaElement | null>(null);
@@ -47,10 +46,10 @@ export const EditModal = ({
       title: PromptTitleRef.current.value,
       text: PromptTextRef.current.value,
     });
-    const indexOfItemToEdit = tree.findIndex(
+    const indexOfItemToEdit = savedData.findIndex(
       (treeItem) => treeItem.id === item.id,
     );
-    const copyOfTree = [...tree];
+    const copyOfTree = [...savedData];
     const itemToEdit = copyOfTree[indexOfItemToEdit];
     if (itemToEdit.type !== "prompt") {
       console.error(
@@ -60,9 +59,9 @@ export const EditModal = ({
     }
     itemToEdit.title = PromptTitleRef.current.value;
     itemToEdit.text = PromptTextRef.current.value;
-    setTree(copyOfTree);
+    setSavedData(copyOfTree);
 
-    storeTree(tree);
+    storeTree(copyOfTree);
     setEditing(undefined);
   };
 
@@ -88,10 +87,10 @@ export const EditModal = ({
       name: FolderNameRef.current.value,
       color: FolderColorRef.current.value,
     });
-    const indexOfItemToEdit = tree.findIndex(
+    const indexOfItemToEdit = savedData.findIndex(
       (treeItem) => treeItem.id === item.id,
     );
-    const copyOfTree = [...tree];
+    const copyOfTree = [...savedData];
     const itemToEdit = copyOfTree[indexOfItemToEdit];
     if (itemToEdit.type !== "folder") {
       console.error(
@@ -101,9 +100,9 @@ export const EditModal = ({
     }
     itemToEdit.name = FolderNameRef.current.value;
     itemToEdit.color = FolderColorRef.current.value;
-    setTree(copyOfTree);
+    setSavedData(copyOfTree);
 
-    storeTree(tree);
+    storeTree(copyOfTree);
     setEditing(undefined);
   };
 

@@ -1,4 +1,4 @@
-import { ChatApp, Folder, Prompt, Settings, Tree } from "@src/types";
+import { Folder, Prompt, Tree } from "@src/types";
 import {
   SimpleTreeItemWrapper,
   SortableTree,
@@ -10,25 +10,17 @@ import { ContextMenu } from "radix-ui";
 import { TrashIcon, Pencil1Icon } from "@radix-ui/react-icons";
 import { EditModal } from "./EditModal";
 import { useDeleteModal } from "./DeleteModal";
+import { usePopupContext } from "../contexts/PopupContext";
 
-export default function PromptManager({
-  tree,
-  setTree,
-  chatApp,
-  settings,
-}: {
-  tree: Tree;
-  setTree: (newTree: Tree) => void;
-  chatApp: ChatApp | null;
-  settings: Settings | null;
-}) {
+export default function PromptManager() {
+  const { savedData, setSavedData, chatApp, settings } = usePopupContext();
   const [editing, setEditing] = useState<TreeItem<Prompt | Folder> | undefined>(
     undefined,
   );
   const { DeleteModalComponent, openModal } = useDeleteModal();
 
   const storeTree = (treeToStore: Tree) => {
-    console.log("Persisting Tree", tree);
+    console.log("Persisting Data", savedData);
     chrome.storage.local.set({ savedPromptData: treeToStore });
   };
 
@@ -48,10 +40,10 @@ export default function PromptManager({
       console.log("Deleting", item.id);
       const confirm: boolean = await openModal();
       if (confirm) {
-        const newTree = [...tree];
-        removeFromTree(item, newTree);
-        storeTree(newTree);
-        setTree(newTree);
+        const newData = [...savedData];
+        removeFromTree(item, newData);
+        storeTree(newData);
+        setSavedData(newData);
       } else {
         console.log("Deletion canceled");
       }
@@ -136,18 +128,16 @@ export default function PromptManager({
         <EditModal
           item={editing!}
           setEditing={setEditing}
-          setTree={setTree}
           storeTree={storeTree}
-          tree={tree}
         />
       ) : null}
       <div hidden={editing ? true : false}>
         <SortableTree
-          items={tree}
+          items={savedData}
           onItemsChanged={(newItems) => {
             console.log("itemsChanged Event", newItems);
             storeTree(newItems);
-            setTree(newItems);
+            setSavedData(newItems);
           }}
           TreeItemComponent={TreeItem}
         />

@@ -1,11 +1,8 @@
-import { Settings } from "@src/types";
+import { usePopupContext } from "../contexts/PopupContext";
 
-type FooterProps = {
-  settings: Settings | null;
-  setSettings: (value: React.SetStateAction<Settings | null>) => void;
-};
+export const Footer = () => {
+  const { settings, setSettings } = usePopupContext();
 
-export const Footer = ({ settings, setSettings }: FooterProps) => {
   return (
     <div className="relative flex items-center w-full">
       <div className="p-2">
@@ -16,7 +13,7 @@ export const Footer = ({ settings, setSettings }: FooterProps) => {
             title="Instantly send prompts"
             checked={settings?.send_instantly.value}
             onChange={() =>
-              setSettings((prevSettings: Settings | null) => {
+              setSettings((prevSettings) => {
                 if (prevSettings) {
                   return {
                     ...prevSettings,

@@ -39,8 +39,8 @@
 | Per-item context menu to delete/edit      | Done     |
 | Edit item modal                           | Done     |
 | Delete item confirmation modal            | Done     |
+| Load/Store Settings                       | Done     |
 | Search                                    | WIP      |
-| Load/Store Settings                       | Planned  |
 | Variables                                 | Planned  |
 | Export/Import                             | Planned  |
 | Support more Chat Apps                    | Planned  |

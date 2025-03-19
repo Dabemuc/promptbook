@@ -11,6 +11,7 @@ import { TrashIcon, Pencil1Icon } from "@radix-ui/react-icons";
 import { EditModal } from "./EditModal";
 import { useDeleteModal } from "./DeleteModal";
 import { usePopupContext } from "../contexts/PopupContext";
+import { storeSavedData } from "../lib/helpers";
 
 export default function PromptManager() {
   const { savedData, setSavedData, chatApp, settings } = usePopupContext();
@@ -18,11 +19,6 @@ export default function PromptManager() {
     undefined,
   );
   const { DeleteModalComponent, openModal } = useDeleteModal();
-
-  const storeTree = (treeToStore: Tree) => {
-    console.log("Persisting Data", savedData);
-    chrome.storage.local.set({ savedPromptData: treeToStore });
-  };
 
   const TreeItem = React.forwardRef<
     HTMLDivElement,
@@ -42,7 +38,7 @@ export default function PromptManager() {
       if (confirm) {
         const newData = [...savedData];
         removeFromTree(item, newData);
-        storeTree(newData);
+        storeSavedData(newData);
         setSavedData(newData);
       } else {
         console.log("Deletion canceled");
@@ -53,8 +49,6 @@ export default function PromptManager() {
       console.log("Editing", item.id);
       setEditing(item);
     };
-
-    console.log(props);
 
     return (
       <SimpleTreeItemWrapper {...props} ref={ref} showDragHandle={false}>
@@ -124,19 +118,13 @@ export default function PromptManager() {
   return (
     <>
       {DeleteModalComponent}
-      {editing ? (
-        <EditModal
-          item={editing!}
-          setEditing={setEditing}
-          storeTree={storeTree}
-        />
-      ) : null}
+      {editing ? <EditModal item={editing!} setEditing={setEditing} /> : null}
       <div hidden={editing ? true : false}>
         <SortableTree
           items={savedData}
           onItemsChanged={(newItems) => {
             console.log("itemsChanged Event", newItems);
-            storeTree(newItems);
+            storeSavedData(newItems);
             setSavedData(newItems);
           }}
           TreeItemComponent={TreeItem}

@@ -1,15 +1,14 @@
-import { Folder, Prompt, Tree } from "@src/types";
+import { Folder, Prompt } from "@src/types";
 import { TreeItem } from "dnd-kit-sortable-tree";
 import { useEffect, useRef } from "react";
 import { usePopupContext } from "../contexts/PopupContext";
+import { storeSavedData } from "../lib/helpers";
 
 export const EditModal = ({
   item,
-  storeTree,
   setEditing,
 }: {
   item: TreeItem<Folder | Prompt>;
-  storeTree: (treeToStore: Tree) => void;
   setEditing: (itemToEdit: TreeItem<Prompt | Folder> | undefined) => void;
 }) => {
   const { savedData, setSavedData } = usePopupContext();
@@ -61,7 +60,7 @@ export const EditModal = ({
     itemToEdit.text = PromptTextRef.current.value;
     setSavedData(copyOfTree);
 
-    storeTree(copyOfTree);
+    storeSavedData(copyOfTree);
     setEditing(undefined);
   };
 
@@ -102,7 +101,7 @@ export const EditModal = ({
     itemToEdit.color = FolderColorRef.current.value;
     setSavedData(copyOfTree);
 
-    storeTree(copyOfTree);
+    storeSavedData(copyOfTree);
     setEditing(undefined);
   };
 

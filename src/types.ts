@@ -21,7 +21,7 @@ export type Folder = {
 export type Tree = TreeItems<Folder | Prompt>;
 
 export type ChatApp = {
-  name: "chatgpt";
+  name: string;
   url: string;
   icon_svg_data_uri: string;
   paste_function: (text: string, send: boolean) => void;

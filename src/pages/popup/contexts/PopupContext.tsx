@@ -7,11 +7,11 @@ type PopupContextType = {
   setSavedData: React.Dispatch<React.SetStateAction<Tree>>;
   chatApp: ChatApp | undefined;
   setChatApp: React.Dispatch<React.SetStateAction<ChatApp | undefined>>;
-  settings: Settings | undefined;
-  setSettings: React.Dispatch<React.SetStateAction<Settings | undefined>>;
+  settings: Settings;
+  setSettings: React.Dispatch<React.SetStateAction<Settings>>;
 };
 
-const PopupContext = createContext<PopupContextType>({
+const defaultContext: PopupContextType = {
   savedData: [],
   setSavedData: () => {},
   chatApp: undefined,
@@ -23,7 +23,9 @@ const PopupContext = createContext<PopupContextType>({
     },
   },
   setSettings: () => {},
-});
+};
+
+const PopupContext = createContext<PopupContextType>(defaultContext);
 
 export const usePopupContext = () => {
   return useContext(PopupContext);
@@ -34,14 +36,39 @@ export const PopupContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [savedData, setSavedData] = useState<Tree>([]);
-  const [chatApp, setChatApp] = useState<ChatApp | undefined>();
-  const [settings, setSettings] = useState<Settings | undefined>();
+  const [savedData, setSavedData] = useState<Tree>(defaultContext.savedData);
+  const [chatApp, setChatApp] = useState<ChatApp | undefined>(
+    defaultContext.chatApp,
+  );
+  const [settings, setSettings] = useState<Settings>(defaultContext.settings);
 
   useEffect(() => {
-    loadSavedData(setSavedData);
-    identifyChatApp(setChatApp);
-    loadSettings(setSettings);
+    const init = async () => {
+      let loadedSavedData = await loadSavedData();
+      let loadedSettings = await loadSettings();
+      const identifiedChatApp = await identifyChatApp();
+
+      // validate settings and data
+      if (!loadedSavedData || loadedSavedData.length === 0) {
+        loadedSavedData = defaultContext.savedData;
+      }
+      if (!loadedSettings || Object.keys(loadedSettings).length === 0) {
+        loadedSettings = defaultContext.settings;
+      }
+
+      // Set state
+      setSavedData(loadedSavedData);
+      setSettings(loadedSettings);
+      setChatApp(identifiedChatApp);
+
+      console.log("Context updated:", {
+        loadedSavedData,
+        loadedSettings,
+        identifiedChatApp,
+      });
+    };
+
+    init();
   }, []);
 
   return (

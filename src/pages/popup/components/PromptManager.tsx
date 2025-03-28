@@ -12,9 +12,17 @@ import { EditModal } from "./EditModal";
 import { useDeleteModal } from "./DeleteModal";
 import { usePopupContext } from "../contexts/PopupContext";
 import { storeSavedData } from "../lib/helpers";
+import { filterDataForSearch } from "../lib/filterSearch";
 
 export default function PromptManager() {
-  const { savedData, setSavedData, chatApp, settings } = usePopupContext();
+  const {
+    savedData,
+    setSavedData,
+    chatApp,
+    settings,
+    searching,
+    searchString,
+  } = usePopupContext();
   const [editing, setEditing] = useState<TreeItem<Prompt | Folder> | undefined>(
     undefined,
   );
@@ -51,7 +59,12 @@ export default function PromptManager() {
     };
 
     return (
-      <SimpleTreeItemWrapper {...props} ref={ref} showDragHandle={false}>
+      <SimpleTreeItemWrapper
+        {...props}
+        ref={ref}
+        showDragHandle={false}
+        disableSorting={searching}
+      >
         <div className="w-full overflow-hidden">
           <span
             className="absolute inset-0 z-[-1]"
@@ -121,9 +134,17 @@ export default function PromptManager() {
       {editing ? <EditModal item={editing!} setEditing={setEditing} /> : null}
       <div hidden={editing ? true : false}>
         <SortableTree
-          items={savedData}
+          items={
+            !searching
+              ? savedData
+              : filterDataForSearch(savedData, searching, searchString)
+          }
           onItemsChanged={(newItems) => {
             console.log("itemsChanged Event", newItems);
+            if (searching) {
+              console.log("Skipped storing items because searching");
+              return;
+            }
             storeSavedData(newItems);
             setSavedData(newItems);
           }}

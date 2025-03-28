@@ -9,6 +9,10 @@ type PopupContextType = {
   setChatApp: React.Dispatch<React.SetStateAction<ChatApp | undefined>>;
   settings: Settings;
   setSettings: React.Dispatch<React.SetStateAction<Settings>>;
+  searchString: string;
+  setSearchString: React.Dispatch<React.SetStateAction<string>>;
+  searching: boolean;
+  setSearching: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const defaultContext: PopupContextType = {
@@ -23,6 +27,10 @@ const defaultContext: PopupContextType = {
     },
   },
   setSettings: () => {},
+  searchString: "",
+  setSearchString: () => {},
+  searching: false,
+  setSearching: () => {},
 };
 
 const PopupContext = createContext<PopupContextType>(defaultContext);
@@ -41,6 +49,10 @@ export const PopupContextProvider = ({
     defaultContext.chatApp,
   );
   const [settings, setSettings] = useState<Settings>(defaultContext.settings);
+  const [searchString, setSearchString] = useState<string>(
+    defaultContext.searchString,
+  );
+  const [searching, setSearching] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -80,6 +92,10 @@ export const PopupContextProvider = ({
         setChatApp,
         settings,
         setSettings,
+        searchString,
+        setSearchString,
+        searching,
+        setSearching,
       }}
     >
       {children}

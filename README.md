@@ -40,7 +40,9 @@
 | Edit item modal                           | Done     |
 | Delete item confirmation modal            | Done     |
 | Load/Store Settings                       | Done     |
-| Search                                    | WIP      |
+| Search                                    | Done     |
+| Fix settings not storing after change     | Planned  |
+| Some way to add folders                   | Planned  |
 | Variables                                 | Planned  |
 | Export/Import                             | Planned  |
 | Support more Chat Apps                    | Planned  |

@@ -1,6 +1,11 @@
 import { ChatApp, Settings, Tree } from "@src/types";
 import { createContext, useContext, useEffect, useState } from "react";
-import { identifyChatApp, loadSavedData, loadSettings } from "../lib/helpers";
+import {
+  identifyChatApp,
+  loadSavedData,
+  loadSettings,
+  storeSettings,
+} from "../lib/helpers";
 
 type PopupContextType = {
   savedData: Tree;
@@ -8,7 +13,7 @@ type PopupContextType = {
   chatApp: ChatApp | undefined;
   setChatApp: React.Dispatch<React.SetStateAction<ChatApp | undefined>>;
   settings: Settings;
-  setSettings: React.Dispatch<React.SetStateAction<Settings>>;
+  updateSettings: (newSettings: Settings) => void;
   searchString: string;
   setSearchString: React.Dispatch<React.SetStateAction<string>>;
   searching: boolean;
@@ -26,7 +31,7 @@ const defaultContext: PopupContextType = {
       value: false,
     },
   },
-  setSettings: () => {},
+  updateSettings: () => {},
   searchString: "",
   setSearchString: () => {},
   searching: false,
@@ -83,6 +88,11 @@ export const PopupContextProvider = ({
     init();
   }, []);
 
+  const updateSettings = (newSettings: Settings) => {
+    storeSettings(newSettings);
+    setSettings(newSettings);
+  };
+
   return (
     <PopupContext.Provider
       value={{
@@ -91,7 +101,7 @@ export const PopupContextProvider = ({
         chatApp,
         setChatApp,
         settings,
-        setSettings,
+        updateSettings,
         searchString,
         setSearchString,
         searching,

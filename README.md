@@ -41,7 +41,7 @@
 | Delete item confirmation modal            | Done     |
 | Load/Store Settings                       | Done     |
 | Search                                    | Done     |
-| Fix settings not storing after change     | Planned  |
+| Fix settings not storing after change     | Done     |
 | Some way to add folders                   | Planned  |
 | Variables                                 | Planned  |
 | Export/Import                             | Planned  |

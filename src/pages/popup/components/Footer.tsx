@@ -1,7 +1,8 @@
+import { Settings } from "@src/types";
 import { usePopupContext } from "../contexts/PopupContext";
 
 export const Footer = () => {
-  const { settings, setSettings } = usePopupContext();
+  const { settings, updateSettings } = usePopupContext();
 
   return (
     <div className="relative flex items-center w-full">
@@ -12,21 +13,18 @@ export const Footer = () => {
             type="checkbox"
             title="Instantly send prompts"
             checked={settings?.send_instantly.value}
-            onChange={() =>
-              setSettings((prevSettings) => {
-                if (prevSettings) {
-                  return {
-                    ...prevSettings,
-                    send_instantly: {
-                      ...prevSettings.send_instantly,
-                      value: !prevSettings.send_instantly.value,
-                      label: prevSettings.send_instantly.label,
-                    },
-                  };
-                }
-                return prevSettings;
-              })
-            }
+            onChange={() => {
+              if (settings) {
+                const newSettings: Settings = {
+                  ...settings,
+                  send_instantly: {
+                    ...settings.send_instantly,
+                    value: !settings.send_instantly.value,
+                  },
+                };
+                updateSettings(newSettings);
+              }
+            }}
           />
           {"Send prompts on click"}
         </label>
